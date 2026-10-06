@@ -34,7 +34,13 @@ def analyze(prompt: str) -> list[Suggestion]:
         suggestions.append(Suggestion("no-format",
             "Questions present but no output format specified."))
 
-    vague = ["some", "maybe", "good", "nice", "appropriate"]
+    if re.search(r"\d+\s*steps?", prompt.lower()) and \
+       "step 1" not in prompt.lower() and "first" not in prompt.lower():
+        suggestions.append(Suggestion("no-steps",
+            "Mentions steps but does not enumerate them. Use numbered steps."))
+
+    vague = ["some", "maybe", "good", "nice", "appropriate", "quick",
+             "better", "stuff"]
     found = [w for w in vague if w in prompt.lower()]
     if found:
         suggestions.append(Suggestion("vague-words",
