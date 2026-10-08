@@ -46,7 +46,38 @@ def analyze(prompt: str) -> list[Suggestion]:
         suggestions.append(Suggestion("vague-words",
             f"Vague words found: {', '.join(found)}. Be specific."))
 
+    repeat = repeated_phrases(prompt)
+    if repeat:
+        suggestions.append(Suggestion("repetition",
+            f"Repeated phrases ({len(repeat)}): {', '.join(repeat[:3])}. "
+            "Consolidate to shorten the prompt."))
+
+    if has_contradictions(prompt):
+        suggestions.append(Suggestion("contradiction",
+            "Prompt contains contradictory constraints (e.g. both 'short' "
+            "and 'detailed'). Pick one."))
+
     return suggestions
+
+
+def repeated_phrases(prompt: str, min_len: int = 5, top_n: int = 5) -> list:
+    """Find words repeated 3+ times as possible filler/repetition."""
+    words = [w.lower() for w in re.findall(r"[a-z]+", prompt)]
+    from collections import Counter
+    counts = Counter(words)
+    return [w for w, c in counts.most_common(top_n) if c >= 3]
+
+
+def has_contradictions(prompt: str) -> bool:
+    """Detect classic contradictory constraint pairs."""
+    pairs = [
+        ("short", "detailed"),
+        ("concise", "elaborate"),
+        ("brief", "thorough"),
+        ("simple", "advanced"),
+    ]
+    low = prompt.lower()
+    return any(a in low and b in low for a, b in pairs)
 
 
 def optimize(prompt: str) -> str:
