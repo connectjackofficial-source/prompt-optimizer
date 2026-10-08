@@ -24,6 +24,18 @@ print(optimize("write something good"))
 - no examples
 - no output format
 - vague words (some, maybe, good, ...)
+- repeated phrases (same word 3+ times)
+- contradictory constraints ("short" + "detailed")
+
+## Programmatic API
+
+```python
+from prompt_optimizer.analyzer import analyze, repeated_phrases, has_contradictions
+
+suggestions = analyze(prompt)   # list of Suggestion(rule, message)
+print(repeated_phrases(prompt)) # words used 3+ times
+print(has_contradictions(prompt))  # bool
+```
 
 ## License
 
