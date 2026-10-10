@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-10-10
+
+- Severity levels on suggestions (critical / warning / info)
+- `score()` 0-100 health score
+- CLI `--json` machine-readable report
+
 ## 0.2.0 - 2026-10-08
 
 - Repeated-phrase detection
