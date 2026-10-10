@@ -32,9 +32,27 @@ print(optimize("write something good"))
 ```python
 from prompt_optimizer.analyzer import analyze, repeated_phrases, has_contradictions
 
-suggestions = analyze(prompt)   # list of Suggestion(rule, message)
+suggestions = analyze(prompt)   # list of Suggestion(rule, message, severity)
 print(repeated_phrases(prompt)) # words used 3+ times
 print(has_contradictions(prompt))  # bool
+```
+
+## Health score
+
+Each suggestion carries a severity (`critical` / `warning` / `info`);
+`score()` converts the list into a 0-100 health score:
+
+```python
+from prompt_optimizer.analyzer import score
+
+print(score(prompt))  # 100 = nothing to fix, lower = more to improve
+```
+
+CLI reports the score and, with `--json`, a machine-readable breakdown:
+
+```bash
+python -m prompt_optimizer.cli "write stuff" --json
+# {"score": 66, "suggestions": [{"rule": "no-role", "severity": "warning", ...}]}
 ```
 
 ## License
