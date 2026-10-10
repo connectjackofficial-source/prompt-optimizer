@@ -9,6 +9,20 @@ from dataclasses import dataclass, field
 class Suggestion:
     rule: str
     message: str
+    severity: str = "warning"  # critical | warning | info
+
+
+SEVERITY = {
+    "too-short": "info",
+    "too-long": "warning",
+    "no-role": "warning",
+    "no-example": "info",
+    "no-format": "warning",
+    "no-steps": "info",
+    "vague-words": "warning",
+    "repetition": "warning",
+    "contradiction": "critical",
+}
 
 
 def analyze(prompt: str) -> list[Suggestion]:
@@ -57,7 +71,17 @@ def analyze(prompt: str) -> list[Suggestion]:
             "Prompt contains contradictory constraints (e.g. both 'short' "
             "and 'detailed'). Pick one."))
 
+    for s in suggestions:
+        s.severity = SEVERITY.get(s.rule, "warning")
     return suggestions
+
+
+def score(prompt: str) -> int:
+    """0-100 health score. Start at 100, subtract per issue weight."""
+    weights = {"critical": 25, "warning": 10, "info": 4}
+    items = analyze(prompt)
+    penalty = sum(weights[s.severity] for s in items)
+    return max(0, min(100, 100 - penalty))
 
 
 def repeated_phrases(prompt: str, min_len: int = 5, top_n: int = 5) -> list:
