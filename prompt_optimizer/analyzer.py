@@ -84,6 +84,31 @@ def score(prompt: str) -> int:
     return max(0, min(100, 100 - penalty))
 
 
+# (keep, drop): the second term is the one removed when both appear.
+CONTRADICT_PAIRS = [
+    ("short", "detailed"),
+    ("concise", "elaborate"),
+    ("brief", "thorough"),
+    ("simple", "advanced"),
+]
+
+
+def auto_fix(prompt: str) -> tuple:
+    """Drop the losing half of contradictory constraints.
+
+    Returns (fixed_prompt, changes) where changes is a list of human-
+    readable edits applied.
+    """
+    low = prompt.lower()
+    changes = []
+    for keep, drop in CONTRADICT_PAIRS:
+        if re.search(rf"\b{keep}\b", low) and re.search(rf"\b{drop}\b", low):
+            prompt = re.sub(rf"\b{drop}\b", "", prompt, flags=re.IGNORECASE)
+            changes.append(f"removed '{drop}' (conflicts with '{keep}')")
+            low = prompt.lower()
+    return " ".join(prompt.split()), changes
+
+
 def repeated_phrases(prompt: str, min_len: int = 5, top_n: int = 5) -> list:
     """Find words repeated 3+ times as possible filler/repetition."""
     words = [w.lower() for w in re.findall(r"[a-z]+", prompt)]
