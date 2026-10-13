@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-10-13
+
+- `auto_fix()` — drop the losing half of contradictory constraints
+
 ## 0.3.0 - 2026-10-10
 
 - Severity levels on suggestions (critical / warning / info)

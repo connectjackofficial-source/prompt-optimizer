@@ -55,6 +55,18 @@ python -m prompt_optimizer.cli "write stuff" --json
 # {"score": 66, "suggestions": [{"rule": "no-role", "severity": "warning", ...}]}
 ```
 
+## Auto-fix
+
+Contradictory constraints ("keep it short but detailed") confuse models.
+`auto_fix()` removes the losing half and tells you what changed:
+
+```python
+from prompt_optimizer.analyzer import auto_fix
+
+fixed, changes = auto_fix("Write a short but detailed explanation")
+# changes == ["removed 'detailed' (conflicts with 'short')"]
+```
+
 ## License
 
 MIT
